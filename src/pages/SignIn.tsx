@@ -1,17 +1,30 @@
 import React from 'react';
-import { View, Image } from 'react-native';
+import { Image } from 'react-native';
 import styled from 'styled-components/native';
 
 import { logo } from 'assets';
 
 const SignIn: React.FC = () => {
   return (
-    <View>
+    <Container>
       <Image source={logo} />
-    </View>
+
+      <Title>Faça seu logon</Title>
+    </Container>
   );
 };
 
 export default SignIn;
 
-const Container = styled.View``;
+const Container = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Title = styled.Text`
+  font-size: 24px;
+  color: #f4ede8;
+  font-family: 'RobotoSlab-Medium';
+  margin: 64px 0 24px;
+`;
