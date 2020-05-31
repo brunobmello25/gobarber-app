@@ -2,12 +2,15 @@ import React from 'react';
 import { Image } from 'react-native';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Feather';
+import { useNavigation } from '@react-navigation/native';
 
 import { Input, Button } from 'components';
 import { logo } from 'assets';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const SignIn: React.FC = () => {
+  const navigation = useNavigation();
+
   return (
     <>
       <ScrollView
@@ -30,7 +33,7 @@ const SignIn: React.FC = () => {
         </Container>
       </ScrollView>
 
-      <CreateAccount>
+      <CreateAccount onPress={() => navigation.navigate('SignUp')}>
         <Icon name="log-in" size={20} color="#ff9000" />
         <CreateAccountText>Criar uma conta</CreateAccountText>
       </CreateAccount>
@@ -45,7 +48,7 @@ const Container = styled.View`
   align-items: center;
   justify-content: center;
 
-  padding: 0 30px;
+  padding: 0 30px 120px;
 `;
 
 const Title = styled.Text`
