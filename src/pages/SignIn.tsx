@@ -2,6 +2,7 @@ import React from 'react';
 import { Image } from 'react-native';
 import styled from 'styled-components/native';
 
+import { Input, Button } from 'components';
 import { logo } from 'assets';
 
 const SignIn: React.FC = () => {
@@ -10,6 +11,17 @@ const SignIn: React.FC = () => {
       <Image source={logo} />
 
       <Title>Faça seu logon</Title>
+
+      <Input placeholder="E-mail" name="email" icon="mail" />
+      <Input placeholder="Senha" name="password" icon="lock" />
+
+      <Button
+        onPress={() => {
+          console.log('Login');
+        }}
+      >
+        Entrar
+      </Button>
     </Container>
   );
 };
@@ -20,6 +32,8 @@ const Container = styled.View`
   flex: 1;
   align-items: center;
   justify-content: center;
+
+  padding: 0 30px;
 `;
 
 const Title = styled.Text`
