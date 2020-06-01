@@ -18,6 +18,7 @@ interface InputProps extends TextInputProps {
 
 interface ContainerProps {
   isFocused: boolean;
+  isErrored: boolean;
 }
 
 interface InputValueReference {
@@ -70,7 +71,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
   }, [registerField, fieldName]);
 
   return (
-    <Container isFocused={isFocused}>
+    <Container isFocused={isFocused} isErrored={!!error}>
       <Icon
         name={icon}
         size={20}
@@ -105,6 +106,12 @@ const Container = styled.View<ContainerProps>`
   align-items: center;
   border-width: 2px;
   border-color: #232129;
+
+  ${props =>
+    props.isErrored &&
+    css`
+      border-color: #c53030;
+    `}
 
   ${props =>
     props.isFocused &&
