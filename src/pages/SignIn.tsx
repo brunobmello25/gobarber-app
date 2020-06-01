@@ -10,6 +10,7 @@ import * as Yup from 'yup';
 import { Input, Button } from 'components';
 import { logo } from 'assets';
 import { getValidationErrors } from 'utils';
+import { useAuth } from 'hooks/auth';
 
 interface SignInFormData {
   email: string;
@@ -21,6 +22,10 @@ const SignIn: React.FC = () => {
   const passwordInputRef = useRef<TextInput>(null);
 
   const navigation = useNavigation();
+
+  const { signIn, user } = useAuth();
+
+  console.log({ user });
 
   const handleSignIn = useCallback(async (data: SignInFormData) => {
     try {
@@ -37,13 +42,13 @@ const SignIn: React.FC = () => {
         abortEarly: false,
       });
 
+      await signIn({ email: data.email, password: data.password });
+    } catch (error) {
       Alert.alert(
         'Erro de autenticação',
         'Ocorreu um erro ao fazer login, cheque as credenciais',
       );
 
-      // await signIn({ email: data.email, password: data.password });
-    } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const errors = getValidationErrors(error);
         formRef.current?.setErrors(errors);
