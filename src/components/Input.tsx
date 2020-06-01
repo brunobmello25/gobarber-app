@@ -1,5 +1,10 @@
-import React, { useEffect, useRef } from 'react';
-import { TextInputProps } from 'react-native';
+import React, {
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+} from 'react';
+import { TextInputProps, TextInput as RNTextInput } from 'react-native';
 import styled from 'styled-components/native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { useField } from '@unform/core';
@@ -13,23 +18,37 @@ interface InputValueReference {
   value: string;
 }
 
-const Input: React.FC<InputProps> = ({ name, icon, ...props }) => {
+interface InputRef {
+  focus(): void;
+}
+
+const Input: React.RefForwardingComponent<InputRef, InputProps> = (
+  { name, icon, ...props },
+  ref,
+) => {
+  const inputElementRef = useRef<RNTextInput>(null);
+
   const { registerField, defaultValue = '', fieldName, error } = useField(name);
   const inputValueRef = useRef<InputValueReference>({ value: defaultValue });
-  const inputElementRef = useRef<any>(null);
+
+  useImperativeHandle(ref, () => ({
+    focus() {
+      inputElementRef.current?.focus();
+    },
+  }));
 
   useEffect(() => {
     registerField<string>({
       name: fieldName,
       ref: inputValueRef.current,
       path: 'value',
-      setValue(ref: any, value) {
+      setValue(_, value) {
         inputValueRef.current.value = value;
         inputElementRef.current?.setNativeProps({ text: value });
       },
       clearValue() {
         inputValueRef.current.value = '';
-        inputElementRef.current.clear();
+        inputElementRef.current?.clear();
       },
     });
   }, [registerField, fieldName]);
@@ -39,18 +58,19 @@ const Input: React.FC<InputProps> = ({ name, icon, ...props }) => {
       <Icon name={icon} size={20} color="#666360" />
 
       <TextInput
+        ref={inputElementRef}
         placeholderTextColor="#666360"
+        defaultValue={defaultValue}
         onChangeText={value => {
           inputValueRef.current.value = value;
         }}
-        defaultValue={defaultValue}
         {...props}
       />
     </Container>
   );
 };
 
-export default Input;
+export default forwardRef(Input);
 
 const Container = styled.View`
   width: 100%;
