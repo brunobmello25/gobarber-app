@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Image } from 'react-native';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
+import { FormHandles } from '@unform/core';
+import { Form } from '@unform/mobile';
 
 import { Input, Button } from 'components';
 import { logo } from 'assets';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const SignIn: React.FC = () => {
+  const formRef = useRef<FormHandles>(null);
   const navigation = useNavigation();
+
+  const handleSubmit = useCallback((data: object) => {
+    console.log(data);
+  }, []);
 
   return (
     <>
@@ -22,10 +29,14 @@ const SignIn: React.FC = () => {
 
           <Title>Faça seu logon</Title>
 
-          <Input placeholder="E-mail" name="email" icon="mail" />
-          <Input placeholder="Senha" name="password" icon="lock" />
+          <Form ref={formRef} onSubmit={handleSubmit}>
+            <Input placeholder="E-mail" name="email" icon="mail" />
+            <Input placeholder="Senha" name="password" icon="lock" />
 
-          <Button>Entrar</Button>
+            <Button onPress={() => formRef.current?.submitForm()}>
+              Entrar
+            </Button>
+          </Form>
 
           <ForgotPassword>
             <ForgotPasswordText>Esqueci minha senha</ForgotPasswordText>
