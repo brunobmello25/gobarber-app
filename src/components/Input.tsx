@@ -3,15 +3,21 @@ import React, {
   useRef,
   useImperativeHandle,
   forwardRef,
+  useState,
+  useCallback,
 } from 'react';
 import { TextInputProps, TextInput as RNTextInput } from 'react-native';
-import styled from 'styled-components/native';
+import styled, { css } from 'styled-components/native';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import { useField } from '@unform/core';
 
 interface InputProps extends TextInputProps {
   name: string;
   icon: string;
+}
+
+interface ContainerProps {
+  isFocused: boolean;
 }
 
 interface InputValueReference {
@@ -30,6 +36,16 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
 
   const { registerField, defaultValue = '', fieldName, error } = useField(name);
   const inputValueRef = useRef<InputValueReference>({ value: defaultValue });
+
+  const [isFocused, setIsFocused] = useState(false);
+  const [isFilled, setIsFilled] = useState(false);
+
+  const handleInputFocus = useCallback(() => setIsFocused(true), []);
+
+  const handleInputBlur = useCallback(() => {
+    setIsFocused(false);
+    setIsFilled(!!inputValueRef.current.value);
+  }, []);
 
   useImperativeHandle(ref, () => ({
     focus() {
@@ -54,8 +70,12 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
   }, [registerField, fieldName]);
 
   return (
-    <Container>
-      <Icon name={icon} size={20} color="#666360" />
+    <Container isFocused={isFocused}>
+      <Icon
+        name={icon}
+        size={20}
+        color={isFocused || isFilled ? '#ff9000' : '#666360'}
+      />
 
       <TextInput
         ref={inputElementRef}
@@ -64,6 +84,8 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
         onChangeText={value => {
           inputValueRef.current.value = value;
         }}
+        onFocus={handleInputFocus}
+        onBlur={handleInputBlur}
         {...props}
       />
     </Container>
@@ -72,7 +94,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
 
 export default forwardRef(Input);
 
-const Container = styled.View`
+const Container = styled.View<ContainerProps>`
   width: 100%;
   height: 60px;
   padding: 0 16px;
@@ -81,6 +103,14 @@ const Container = styled.View`
   margin-bottom: 8px;
   flex-direction: row;
   align-items: center;
+  border-width: 2px;
+  border-color: #232129;
+
+  ${props =>
+    props.isFocused &&
+    css`
+      border-color: #ff9000;
+    `}
 `;
 
 const TextInput = styled.TextInput`
