@@ -13,22 +13,29 @@ interface SignInCredentials {
   password: string;
 }
 
+interface IUser {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string;
+}
+
 interface IAuthContext {
-  user: object;
+  user: IUser;
   loading: boolean;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
 }
 
-interface AuthState {
-  user: object;
+interface IAuthState {
+  user: IUser;
   token: string;
 }
 
 const AuthContext = createContext<IAuthContext>({} as IAuthContext);
 
 const AuthProvider: React.FC = ({ children }) => {
-  const [data, setData] = useState<AuthState>({} as AuthState);
+  const [data, setData] = useState<IAuthState>({} as IAuthState);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -67,7 +74,7 @@ const AuthProvider: React.FC = ({ children }) => {
   const signOut = useCallback(async () => {
     await AsyncStorage.multiRemove(['@GoBarber:user', '@GoBarber:token']);
 
-    setData({} as AuthState);
+    setData({} as IAuthState);
   }, []);
 
   return (
