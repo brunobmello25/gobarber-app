@@ -1,8 +1,92 @@
-import React from 'react';
-import { View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Feather';
+
+import { useAuth } from 'hooks/auth';
+import { api } from 'services';
+import {
+  Container,
+  Header,
+  BackButton,
+  HeaderTitle,
+  UserAvatar,
+  ProvidersListContainer,
+  ProvidersList,
+  ProviderContainer,
+  ProviderAvatar,
+  ProviderName,
+} from './styles';
+
+interface IRouteParams {
+  providerId: string;
+}
+
+export interface IProvider {
+  id: string;
+  name: string;
+  avatarUrl: string;
+}
 
 const CreateAppointment: React.FC = () => {
-  return <View />;
+  const { user } = useAuth();
+
+  const { goBack } = useNavigation();
+
+  const route = useRoute();
+  const routeParams = route.params as IRouteParams;
+
+  const [providers, setProviders] = useState<IProvider[]>([]);
+  const [selectedProviderId, setSelectedProviderId] = useState(
+    routeParams.providerId,
+  );
+
+  useEffect(() => {
+    api.get('/providers').then(response => {
+      setProviders(response.data.providers);
+    });
+  }, []);
+
+  const navigateBack = useCallback(() => {
+    goBack();
+  }, [goBack]);
+
+  const handleSelectProvider = useCallback((providerId: string) => {
+    setSelectedProviderId(providerId);
+  }, []);
+
+  return (
+    <Container>
+      <Header>
+        <BackButton onPress={navigateBack}>
+          <Icon name="chevron-left" size={24} color="#999591" />
+        </BackButton>
+
+        <HeaderTitle>Cabeleireiros</HeaderTitle>
+
+        <UserAvatar source={{ uri: user.avatarUrl }} />
+      </Header>
+
+      <ProvidersListContainer>
+        <ProvidersList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={providers}
+          keyExtractor={provider => provider.id}
+          renderItem={({ item: provider }) => (
+            <ProviderContainer
+              onPress={() => handleSelectProvider(provider.id)}
+              selected={provider.id === selectedProviderId}
+            >
+              <ProviderAvatar source={{ uri: provider.avatarUrl }} />
+              <ProviderName selected={provider.id === selectedProviderId}>
+                {provider.name}
+              </ProviderName>
+            </ProviderContainer>
+          )}
+        />
+      </ProvidersListContainer>
+    </Container>
+  );
 };
 
 export default CreateAppointment;
