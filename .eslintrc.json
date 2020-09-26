@@ -39,7 +39,8 @@
         "ts": "never",
         "tsx": "never"
       }
-    ]
+    ],
+    "import/no-duplicates": "off"
   },
   "settings": {
     "import/resolver": {
