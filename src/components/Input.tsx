@@ -14,6 +14,7 @@ import { useField } from '@unform/core';
 interface InputProps extends TextInputProps {
   name: string;
   icon: string;
+  containerStyle?: {};
 }
 
 interface ContainerProps {
@@ -29,8 +30,8 @@ interface InputRef {
   focus(): void;
 }
 
-const Input: React.RefForwardingComponent<InputRef, InputProps> = (
-  { name, icon, ...props },
+const Input: React.ForwardRefRenderFunction<InputRef, InputProps> = (
+  { name, icon, containerStyle = {}, ...props },
   ref,
 ) => {
   const inputElementRef = useRef<RNTextInput>(null);
@@ -71,7 +72,7 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
   }, [registerField, fieldName]);
 
   return (
-    <Container isFocused={isFocused} isErrored={!!error}>
+    <Container style={containerStyle} isFocused={isFocused} isErrored={!!error}>
       <Icon
         name={icon}
         size={20}
